@@ -1,35 +1,23 @@
 const express = require('express');
 const cors = require('cors');
 const errorHandler = require('./src/middleware/errorHandler');
-const authRoutes = require('./src/routes/authRoutes');
 
 const app = express();
 const PORT = process.env.PORT || 4000;
 
-// Middleware
+// Middlewares
 app.use(cors());
 app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
 
-// Health check
-app.get('/health', (req, res) => {
-	res.json({
-		status: 'ok',
-		message: 'DICRI Backend API running',
-		timestamp: new Date().toISOString(),
-	});
-});
+app.use('/api/auth', require('./src/routes/authRoutes'));
+app.use('/api/expedientes', require('./src/routes/expedientesRoutes'));
+app.use('/api/expedientes', require('./src/routes/indiciosRoutes')); 
+app.use('/api/revision', require('./src/routes/revisionRoutes'));
+app.use('/api/reportes', require('./src/routes/reportesRoutes'));
 
-// Routes
-app.use('/api/auth', authRoutes);
-
-// Error handling middleware (debe ir al final)
+// Error handler
 app.use(errorHandler);
 
-// Iniciar servidor
 app.listen(PORT, () => {
-	console.log(`Server running on port ${PORT}`);
-	console.log(`Environment: ${process.env.NODE_ENV || 'development'}`);
+  console.log(`Server running on port ${PORT}`);
 });
-
-module.exports = app;

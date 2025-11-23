@@ -36,7 +36,7 @@ export const auth = {
       body: JSON.stringify({ username, password }),
     });
     const data = await handleResponse(response);
-    if (data.token) {
+    if (data.token && typeof window !== 'undefined') {
       localStorage.setItem('token', data.token);
       localStorage.setItem('user', JSON.stringify(data.user));
     }
@@ -44,13 +44,18 @@ export const auth = {
   },
 
   logout: () => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
+    if (typeof window !== 'undefined') {
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
+    }
   },
 
   getCurrentUser: () => {
-    const user = localStorage.getItem('user');
-    return user ? JSON.parse(user) : null;
+    if (typeof window !== 'undefined') {
+      const user = localStorage.getItem('user');
+      return user ? JSON.parse(user) : null;
+    }
+    return null;
   },
 
   getMe: async () => {
