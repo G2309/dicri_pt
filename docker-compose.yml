@@ -1,0 +1,64 @@
+services:
+  db:
+    image: mcr.microsoft.com/mssql/server:2019-latest
+    container_name: mp_dicri_db
+    environment:
+      ACCEPT_EULA: "Y"
+    secrets:
+      - sa_password
+    volumes:
+      - dbdata:/var/opt/mssql
+    networks:
+      - mpnet
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: mp_dicri_backend
+    depends_on:
+      - db
+    ports:
+      - "4000:4000"
+    secrets:
+      - sa_password
+    environment:
+      DB_HOST: db
+      DB_USER: sa
+      DB_PASSWORD_FILE: /run/secrets/sa_password
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    tmpfs:
+      - /tmp
+    networks:
+      - mpnet
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: mp_dicri_frontend
+    depends_on:
+      - backend
+    ports:
+      - "3000:3000"
+    environment:
+      NODE_ENV: production
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    networks:
+      - mpnet
+
+secrets:
+  sa_password:
+    file: ./secrets/sa_password.txt
+
+volumes:
+  dbdata:
+
+networks:
+  mpnet:

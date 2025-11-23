@@ -1,0 +1,8 @@
+#!/bin/sh
+set -e
+
+if [ -f /run/secrets/sa_password ]; then
+  export DB_PASSWORD="$(cat /run/secrets/sa_password)"
+fi
+
+exec node server.js
