@@ -57,7 +57,7 @@ BEGIN
         e.FechaAprobacion,
         (SELECT COUNT(*) FROM dbo.Indicios WHERE ExpedienteId = e.ExpedienteId) AS TotalIndicios
     FROM dbo.Expedientes e
-    INNER JOIN dbo.Users t ON e.TecnicoId = t.UserId
+    LEFT JOIN dbo.Users t ON e.TecnicoId = t.UserId
     LEFT JOIN dbo.Users c ON e.CoordinadorId = c.UserId
     WHERE (@Estado IS NULL OR e.Estado = @Estado)
         AND (@FechaInicio IS NULL OR e.FechaRegistro >= @FechaInicio)
@@ -92,7 +92,7 @@ BEGIN
         e.FechaAprobacion,
         (SELECT COUNT(*) FROM dbo.Indicios WHERE ExpedienteId = e.ExpedienteId) AS TotalIndicios
     FROM dbo.Expedientes e
-    INNER JOIN dbo.Users t ON e.TecnicoId = t.UserId
+    LEFT JOIN dbo.Users t ON e.TecnicoId = t.UserId
     LEFT JOIN dbo.Users c ON e.CoordinadorId = c.UserId
     WHERE e.ExpedienteId = @ExpedienteId;
 END

@@ -4,12 +4,26 @@ services:
     container_name: mp_dicri_db
     environment:
       ACCEPT_EULA: "Y"
-    secrets:
-      - sa_password
+      SA_PASSWORD: "dicri_pt123@"
     volumes:
       - dbdata:/var/opt/mssql
+      - ./db:/docker-entrypoint-initdb.d
     networks:
       - mpnet
+
+  db-init:
+    image: mcr.microsoft.com/mssql/server:2019-latest
+    container_name: mp_dicri_db_init
+    depends_on:
+      - db
+    environment:
+      SA_PASSWORD: "dicri_pt123@"
+    volumes:
+      - ./db:/db
+    command: /bin/bash /db/init-db.sh
+    networks:
+      - mpnet
+    restart: "no"
 
   backend:
     build:
@@ -17,7 +31,7 @@ services:
       dockerfile: Dockerfile
     container_name: mp_dicri_backend
     depends_on:
-      - db
+      - db-init
     ports:
       - "4000:4000"
     secrets:
@@ -26,6 +40,9 @@ services:
       DB_HOST: db
       DB_USER: sa
       DB_PASSWORD_FILE: /run/secrets/sa_password
+      DB_NAME: DICRI_DB
+      JWT_SECRET: dicri_secret_key_2025
+      NODE_ENV: production
     security_opt:
       - no-new-privileges:true
     cap_drop:
