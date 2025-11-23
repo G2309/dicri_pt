@@ -1,440 +1,452 @@
 {
-	"info": {
-		"name": "DICRI API",
-		"description": "API para Sistema de Gestión de Evidencias DICRI",
-		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
-	},
-	"variable": [
-		{
-			"key": "baseUrl",
-			"value": "http://localhost:4000/api",
-			"type": "string"
-		},
-		{
-			"key": "token",
-			"value": "",
-			"type": "string"
-		}
-	],
-	"item": [
-		{
-			"name": "Auth",
-			"item": [
-				{
-					"name": "Login",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"if (pm.response.code === 200) {",
-									"    var jsonData = pm.response.json();",
-									"    pm.collectionVariables.set('token', jsonData.token);",
-									"}"
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "POST",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n\t\"username\": \"tecnico1\",\n\t\"password\": \"tec123\"\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{baseUrl}}/auth/login",
-							"host": ["{{baseUrl}}"],
-							"path": ["auth", "login"]
-						}
-					}
-				},
-				{
-					"name": "Get Current User",
-					"request": {
-						"method": "GET",
-						"header": [
-							{
-								"key": "Authorization",
-								"value": "Bearer {{token}}",
-								"type": "text"
-							}
-						],
-						"url": {
-							"raw": "{{baseUrl}}/auth/me",
-							"host": ["{{baseUrl}}"],
-							"path": ["auth", "me"]
-						}
-					}
-				}
-			]
-		},
-		{
-			"name": "Expedientes",
-			"item": [
-				{
-					"name": "Crear Expediente",
-					"request": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "Authorization",
-								"value": "Bearer {{token}}",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n\t\"numeroExpediente\": \"EXP-2025-001\",\n\t\"descripcion\": \"Robo en zona 10\",\n\t\"ubicacion\": \"Calle Principal, Zona 10\"\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{baseUrl}}/expedientes",
-							"host": ["{{baseUrl}}"],
-							"path": ["expedientes"]
-						}
-					}
-				},
-				{
-					"name": "Listar Expedientes",
-					"request": {
-						"method": "GET",
-						"header": [
-							{
-								"key": "Authorization",
-								"value": "Bearer {{token}}",
-								"type": "text"
-							}
-						],
-						"url": {
-							"raw": "{{baseUrl}}/expedientes?estado=Borrador",
-							"host": ["{{baseUrl}}"],
-							"path": ["expedientes"],
-							"query": [
-								{
-									"key": "estado",
-									"value": "Borrador"
-								},
-								{
-									"key": "fechaInicio",
-									"value": "2025-01-01",
-									"disabled": true
-								},
-								{
-									"key": "fechaFin",
-									"value": "2025-12-31",
-									"disabled": true
-								}
-							]
-						}
-					}
-				},
-				{
-					"name": "Obtener Expediente por ID",
-					"request": {
-						"method": "GET",
-						"header": [
-							{
-								"key": "Authorization",
-								"value": "Bearer {{token}}",
-								"type": "text"
-							}
-						],
-						"url": {
-							"raw": "{{baseUrl}}/expedientes/1",
-							"host": ["{{baseUrl}}"],
-							"path": ["expedientes", "1"]
-						}
-					}
-				},
-				{
-					"name": "Actualizar Expediente",
-					"request": {
-						"method": "PUT",
-						"header": [
-							{
-								"key": "Authorization",
-								"value": "Bearer {{token}}",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n\t\"numeroExpediente\": \"EXP-2025-001\",\n\t\"descripcion\": \"Robo en zona 10 - Actualizado\",\n\t\"ubicacion\": \"Calle Principal, Zona 10\"\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{baseUrl}}/expedientes/1",
-							"host": ["{{baseUrl}}"],
-							"path": ["expedientes", "1"]
-						}
-					}
-				},
-				{
-					"name": "Enviar a Revisión",
-					"request": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "Authorization",
-								"value": "Bearer {{token}}",
-								"type": "text"
-							}
-						],
-						"url": {
-							"raw": "{{baseUrl}}/expedientes/1/revision",
-							"host": ["{{baseUrl}}"],
-							"path": ["expedientes", "1", "revision"]
-						}
-					}
-				}
-			]
-		},
-		{
-			"name": "Indicios",
-			"item": [
-				{
-					"name": "Crear Indicio",
-					"request": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "Authorization",
-								"value": "Bearer {{token}}",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n\t\"descripcion\": \"Arma de fuego calibre 9mm\",\n\t\"color\": \"Negro\",\n\t\"tamano\": \"20cm x 15cm\",\n\t\"peso\": 0.85,\n\t\"ubicacion\": \"Escena del crimen, sector A\"\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{baseUrl}}/expedientes/1/indicios",
-							"host": ["{{baseUrl}}"],
-							"path": ["expedientes", "1", "indicios"]
-						}
-					}
-				},
-				{
-					"name": "Listar Indicios de Expediente",
-					"request": {
-						"method": "GET",
-						"header": [
-							{
-								"key": "Authorization",
-								"value": "Bearer {{token}}",
-								"type": "text"
-							}
-						],
-						"url": {
-							"raw": "{{baseUrl}}/expedientes/1/indicios",
-							"host": ["{{baseUrl}}"],
-							"path": ["expedientes", "1", "indicios"]
-						}
-					}
-				},
-				{
-					"name": "Actualizar Indicio",
-					"request": {
-						"method": "PUT",
-						"header": [
-							{
-								"key": "Authorization",
-								"value": "Bearer {{token}}",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n\t\"descripcion\": \"Arma de fuego calibre 9mm - Revisado\",\n\t\"color\": \"Negro\",\n\t\"tamano\": \"20cm x 15cm\",\n\t\"peso\": 0.85,\n\t\"ubicacion\": \"Escena del crimen, sector A\"\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{baseUrl}}/expedientes/indicios/1",
-							"host": ["{{baseUrl}}"],
-							"path": ["expedientes", "indicios", "1"]
-						}
-					}
-				},
-				{
-					"name": "Eliminar Indicio",
-					"request": {
-						"method": "DELETE",
-						"header": [
-							{
-								"key": "Authorization",
-								"value": "Bearer {{token}}",
-								"type": "text"
-							}
-						],
-						"url": {
-							"raw": "{{baseUrl}}/expedientes/indicios/1",
-							"host": ["{{baseUrl}}"],
-							"path": ["expedientes", "indicios", "1"]
-						}
-					}
-				}
-			]
-		},
-		{
-			"name": "Revisión",
-			"item": [
-				{
-					"name": "Listar Pendientes de Revisión",
-					"request": {
-						"method": "GET",
-						"header": [
-							{
-								"key": "Authorization",
-								"value": "Bearer {{token}}",
-								"type": "text"
-							}
-						],
-						"url": {
-							"raw": "{{baseUrl}}/revision/pendientes",
-							"host": ["{{baseUrl}}"],
-							"path": ["revision", "pendientes"]
-						}
-					}
-				},
-				{
-					"name": "Aprobar Expediente",
-					"request": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "Authorization",
-								"value": "Bearer {{token}}",
-								"type": "text"
-							}
-						],
-						"url": {
-							"raw": "{{baseUrl}}/revision/1/aprobar",
-							"host": ["{{baseUrl}}"],
-							"path": ["revision", "1", "aprobar"]
-						}
-					}
-				},
-				{
-					"name": "Rechazar Expediente",
-					"request": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "Authorization",
-								"value": "Bearer {{token}}",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n\t\"justificacion\": \"Los datos del expediente están incompletos. Falta información sobre la ubicación exacta de los indicios.\"\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{baseUrl}}/revision/1/rechazar",
-							"host": ["{{baseUrl}}"],
-							"path": ["revision", "1", "rechazar"]
-						}
-					}
-				}
-			]
-		},
-		{
-			"name": "Reportes",
-			"item": [
-				{
-					"name": "Reporte de Registros",
-					"request": {
-						"method": "GET",
-						"header": [
-							{
-								"key": "Authorization",
-								"value": "Bearer {{token}}",
-								"type": "text"
-							}
-						],
-						"url": {
-							"raw": "{{baseUrl}}/reportes/registros?estado=Aprobado",
-							"host": ["{{baseUrl}}"],
-							"path": ["reportes", "registros"],
-							"query": [
-								{
-									"key": "estado",
-									"value": "Aprobado"
-								},
-								{
-									"key": "fechaInicio",
-									"value": "2025-01-01",
-									"disabled": true
-								},
-								{
-									"key": "fechaFin",
-									"value": "2025-12-31",
-									"disabled": true
-								}
-							]
-						}
-					}
-				},
-				{
-					"name": "Estadísticas",
-					"request": {
-						"method": "GET",
-						"header": [
-							{
-								"key": "Authorization",
-								"value": "Bearer {{token}}",
-								"type": "text"
-							}
-						],
-						"url": {
-							"raw": "{{baseUrl}}/reportes/estadisticas",
-							"host": ["{{baseUrl}}"],
-							"path": ["reportes", "estadisticas"],
-							"query": [
-								{
-									"key": "fechaInicio",
-									"value": "2025-01-01",
-									"disabled": true
-								},
-								{
-									"key": "fechaFin",
-									"value": "2025-12-31",
-									"disabled": true
-								}
-							]
-						}
-					}
-				}
-			]
-		}
-	]
+  "info": {
+    "name": "DICRI API",
+    "description": "API para Sistema de Gestión de Evidencias DICRI",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{token}}",
+        "type": "string"
+      }
+    ]
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:4000/api",
+      "type": "string"
+    },
+    {
+      "key": "token",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.collectionVariables.set('token', jsonData.token);",
+                  "    console.log('Token guardado:', jsonData.token);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"username\": \"tecnico1\",\n    \"password\": \"tecnico123\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "login"]
+            }
+          }
+        },
+        {
+          "name": "Get Current User",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/auth/me",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "me"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Expedientes",
+      "item": [
+        {
+          "name": "Crear Expediente",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"numeroExpediente\": \"EXP-2025-001\",\n    \"descripcion\": \"Robo en zona 10\",\n    \"ubicacion\": \"Calle Principal, Zona 10\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/expedientes",
+              "host": ["{{baseUrl}}"],
+              "path": ["expedientes"]
+            }
+          }
+        },
+        {
+          "name": "Listar Expedientes",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/expedientes?estado=Borrador",
+              "host": ["{{baseUrl}}"],
+              "path": ["expedientes"],
+              "query": [
+                {
+                  "key": "estado",
+                  "value": "Borrador"
+                },
+                {
+                  "key": "fechaInicio",
+                  "value": "2025-01-01",
+                  "disabled": true
+                },
+                {
+                  "key": "fechaFin",
+                  "value": "2025-12-31",
+                  "disabled": true
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Obtener Expediente por ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/expedientes/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["expedientes", "1"]
+            }
+          }
+        },
+        {
+          "name": "Actualizar Expediente",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"numeroExpediente\": \"EXP-2025-001\",\n    \"descripcion\": \"Robo en zona 10 - Actualizado\",\n    \"ubicacion\": \"Calle Principal, Zona 10\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/expedientes/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["expedientes", "1"]
+            }
+          }
+        },
+        {
+          "name": "Enviar a Revisión",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/expedientes/1/revision",
+              "host": ["{{baseUrl}}"],
+              "path": ["expedientes", "1", "revision"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Indicios",
+      "item": [
+        {
+          "name": "Crear Indicio",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"descripcion\": \"Arma de fuego calibre 9mm\",\n    \"color\": \"Negro\",\n    \"tamano\": \"20cm x 15cm\",\n    \"peso\": 0.85,\n    \"ubicacion\": \"Escena del crimen, sector A\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/expedientes/1/indicios",
+              "host": ["{{baseUrl}}"],
+              "path": ["expedientes", "1", "indicios"]
+            }
+          }
+        },
+        {
+          "name": "Listar Indicios",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/expedientes/1/indicios",
+              "host": ["{{baseUrl}}"],
+              "path": ["expedientes", "1", "indicios"]
+            }
+          }
+        },
+        {
+          "name": "Actualizar Indicio",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"descripcion\": \"Arma de fuego calibre 9mm - Revisado\",\n    \"color\": \"Negro\",\n    \"tamano\": \"20cm x 15cm\",\n    \"peso\": 0.85,\n    \"ubicacion\": \"Escena del crimen, sector A\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/expedientes/indicios/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["expedientes", "indicios", "1"]
+            }
+          }
+        },
+        {
+          "name": "Eliminar Indicio",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/expedientes/indicios/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["expedientes", "indicios", "1"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Revisión",
+      "item": [
+        {
+          "name": "Listar Pendientes",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/revision/pendientes",
+              "host": ["{{baseUrl}}"],
+              "path": ["revision", "pendientes"]
+            }
+          }
+        },
+        {
+          "name": "Aprobar Expediente",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/revision/1/aprobar",
+              "host": ["{{baseUrl}}"],
+              "path": ["revision", "1", "aprobar"]
+            }
+          }
+        },
+        {
+          "name": "Rechazar Expediente",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"justificacion\": \"Los datos del expediente están incompletos. Falta información sobre la ubicación exacta de los indicios.\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/revision/1/rechazar",
+              "host": ["{{baseUrl}}"],
+              "path": ["revision", "1", "rechazar"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Reportes",
+      "item": [
+        {
+          "name": "Reporte de Registros",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/reportes/registros?estado=Aprobado",
+              "host": ["{{baseUrl}}"],
+              "path": ["reportes", "registros"],
+              "query": [
+                {
+                  "key": "estado",
+                  "value": "Aprobado"
+                },
+                {
+                  "key": "fechaInicio",
+                  "value": "2025-01-01",
+                  "disabled": true
+                },
+                {
+                  "key": "fechaFin",
+                  "value": "2025-12-31",
+                  "disabled": true
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Estadísticas",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/reportes/estadisticas",
+              "host": ["{{baseUrl}}"],
+              "path": ["reportes", "estadisticas"],
+              "query": [
+                {
+                  "key": "fechaInicio",
+                  "value": "2025-01-01",
+                  "disabled": true
+                },
+                {
+                  "key": "fechaFin",
+                  "value": "2025-12-31",
+                  "disabled": true
+                }
+              ]
+            }
+          }
+        }
+      ]
+    }
+  ]
 }
+

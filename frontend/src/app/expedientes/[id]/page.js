@@ -1,5 +1,4 @@
 'use client';
-
 import { useEffect, useState } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import { expedientes, indicios, auth } from '@/app/lib/api';
@@ -21,6 +20,10 @@ export default function ExpedienteDetailPage() {
   const user = auth.getCurrentUser();
 
   useEffect(() => {
+    if (!user) {
+      router.push('/login');
+      return;
+    }
     loadData();
   }, [params.id]);
 
@@ -72,214 +75,228 @@ export default function ExpedienteDetailPage() {
   };
 
   if (loading) {
-    return <div className="text-center py-8">Cargando...</div>;
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center text-gray-600">Cargando...</div>
+      </div>
+    );
   }
 
   if (!expediente) {
-    return <div className="text-center py-8">Expediente no encontrado</div>;
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center text-gray-600">Expediente no encontrado</div>
+      </div>
+    );
   }
 
   const canEdit = expediente.Estado === 'Borrador' && 
     (user?.role === 'Técnico' || user?.role === 'Administrador');
 
   return (
-    <div className="space-y-6">
-      <div className="flex justify-between items-center">
-        <div>
-          <button onClick={() => router.back()} className="text-blue-600 hover:text-blue-800 mb-2">
-            ← Volver
-          </button>
-          <h1 className="text-3xl font-bold text-gray-800">{expediente.NumeroExpediente}</h1>
-        </div>
-        <span
-          className={`px-4 py-2 rounded-full text-sm font-medium ${
-            expediente.Estado === 'Aprobado'
-              ? 'bg-green-100 text-green-800'
-              : expediente.Estado === 'Rechazado'
-              ? 'bg-red-100 text-red-800'
-              : expediente.Estado === 'En Revisión'
-              ? 'bg-blue-100 text-blue-800'
-              : 'bg-gray-100 text-gray-800'
-          }`}
-        >
-          {expediente.Estado}
-        </span>
-      </div>
-
-      <div className="bg-white rounded-lg shadow p-6">
-        <h2 className="text-xl font-semibold mb-4">Información General</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div>
-            <div className="text-sm text-gray-600">Descripción</div>
-            <div className="font-medium">{expediente.Descripcion}</div>
-          </div>
-          <div>
-            <div className="text-sm text-gray-600">Ubicación</div>
-            <div className="font-medium">{expediente.Ubicacion}</div>
-          </div>
-          <div>
-            <div className="text-sm text-gray-600">Técnico</div>
-            <div className="font-medium">{expediente.TecnicoNombre}</div>
-          </div>
-          <div>
-            <div className="text-sm text-gray-600">Fecha de Registro</div>
-            <div className="font-medium">
-              {new Date(expediente.FechaRegistro).toLocaleDateString()}
-            </div>
-          </div>
-          {expediente.CoordinadorNombre && (
+    <div className="min-h-screen bg-gray-50">
+      <div className="max-w-7xl mx-auto px-4 py-6">
+        <div className="space-y-6">
+          <div className="flex justify-between items-center">
             <div>
-              <div className="text-sm text-gray-600">Coordinador</div>
-              <div className="font-medium">{expediente.CoordinadorNombre}</div>
+              <button 
+                onClick={() => router.back()} 
+                className="text-blue-600 hover:text-blue-800 mb-2 transition-colors"
+              >
+                ← Volver
+              </button>
+              <h1 className="text-3xl font-bold text-gray-800">{expediente.NumeroExpediente}</h1>
             </div>
-          )}
-          {expediente.Justificacion && (
-            <div className="md:col-span-2">
-              <div className="text-sm text-gray-600">Justificación de Rechazo</div>
-              <div className="font-medium text-red-600">{expediente.Justificacion}</div>
-            </div>
-          )}
-        </div>
-
-        {canEdit && (
-          <div className="mt-4 pt-4 border-t">
-            <button
-              onClick={handleSubmitForReview}
-              disabled={indiciosList.length === 0}
-              className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed"
+            <span
+              className={`px-4 py-2 rounded-full text-sm font-medium ${
+                expediente.Estado === 'Aprobado'
+                  ? 'bg-green-100 text-green-800'
+                  : expediente.Estado === 'Rechazado'
+                  ? 'bg-red-100 text-red-800'
+                  : expediente.Estado === 'En Revisión'
+                  ? 'bg-blue-100 text-blue-800'
+                  : 'bg-gray-100 text-gray-800'
+              }`}
             >
-              Enviar a Revisión
-            </button>
-            {indiciosList.length === 0 && (
-              <p className="text-sm text-gray-600 mt-2">
-                Debe agregar al menos un indicio antes de enviar a revisión
-              </p>
+              {expediente.Estado}
+            </span>
+          </div>
+
+          <div className="bg-white rounded-lg shadow p-6">
+            <h2 className="text-xl font-semibold text-gray-800 mb-4">Información General</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <div className="text-sm text-gray-600">Descripción</div>
+                <div className="font-medium text-gray-900">{expediente.Descripcion}</div>
+              </div>
+              <div>
+                <div className="text-sm text-gray-600">Ubicación</div>
+                <div className="font-medium text-gray-900">{expediente.Ubicacion}</div>
+              </div>
+              <div>
+                <div className="text-sm text-gray-600">Técnico</div>
+                <div className="font-medium text-gray-900">{expediente.TecnicoNombre}</div>
+              </div>
+              <div>
+                <div className="text-sm text-gray-600">Fecha de Registro</div>
+                <div className="font-medium text-gray-900">
+                  {new Date(expediente.FechaRegistro).toLocaleDateString()}
+                </div>
+              </div>
+              {expediente.CoordinadorNombre && (
+                <div>
+                  <div className="text-sm text-gray-600">Coordinador</div>
+                  <div className="font-medium text-gray-900">{expediente.CoordinadorNombre}</div>
+                </div>
+              )}
+              {expediente.Justificacion && (
+                <div className="md:col-span-2">
+                  <div className="text-sm text-gray-600">Justificación de Rechazo</div>
+                  <div className="font-medium text-red-600">{expediente.Justificacion}</div>
+                </div>
+              )}
+            </div>
+            {canEdit && (
+              <div className="mt-4 pt-4 border-t border-gray-200">
+                <button
+                  onClick={handleSubmitForReview}
+                  disabled={indiciosList.length === 0}
+                  className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors"
+                >
+                  Enviar a Revisión
+                </button>
+                {indiciosList.length === 0 && (
+                  <p className="text-sm text-gray-600 mt-2">
+                    Debe agregar al menos un indicio antes de enviar a revisión
+                  </p>
+                )}
+              </div>
             )}
           </div>
-        )}
-      </div>
 
-      <div className="bg-white rounded-lg shadow">
-        <div className="p-6 border-b flex justify-between items-center">
-          <h2 className="text-xl font-semibold">Indicios ({indiciosList.length})</h2>
-          {canEdit && (
-            <button
-              onClick={() => setShowIndicioForm(!showIndicioForm)}
-              className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
-            >
-              + Agregar Indicio
-            </button>
-          )}
-        </div>
-
-        {showIndicioForm && (
-          <div className="p-6 border-b bg-gray-50">
-            <form onSubmit={handleCreateIndicio} className="space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="md:col-span-2">
-                  <label className="block text-sm font-medium mb-2">Descripción *</label>
-                  <textarea
-                    value={indicioForm.descripcion}
-                    onChange={(e) =>
-                      setIndicioForm({ ...indicioForm, descripcion: e.target.value })
-                    }
-                    required
-                    className="w-full px-3 py-2 border rounded-lg"
-                    rows={2}
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium mb-2">Color</label>
-                  <input
-                    type="text"
-                    value={indicioForm.color}
-                    onChange={(e) => setIndicioForm({ ...indicioForm, color: e.target.value })}
-                    className="w-full px-3 py-2 border rounded-lg"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium mb-2">Tamaño</label>
-                  <input
-                    type="text"
-                    value={indicioForm.tamano}
-                    onChange={(e) => setIndicioForm({ ...indicioForm, tamano: e.target.value })}
-                    className="w-full px-3 py-2 border rounded-lg"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium mb-2">Peso</label>
-                  <input
-                    type="number"
-                    step="0.01"
-                    value={indicioForm.peso}
-                    onChange={(e) => setIndicioForm({ ...indicioForm, peso: e.target.value })}
-                    className="w-full px-3 py-2 border rounded-lg"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium mb-2">Ubicación *</label>
-                  <input
-                    type="text"
-                    value={indicioForm.ubicacion}
-                    onChange={(e) => setIndicioForm({ ...indicioForm, ubicacion: e.target.value })}
-                    required
-                    className="w-full px-3 py-2 border rounded-lg"
-                  />
-                </div>
-              </div>
-              <div className="flex gap-2">
+          <div className="bg-white rounded-lg shadow">
+            <div className="p-6 border-b border-gray-200 flex justify-between items-center">
+              <h2 className="text-xl font-semibold text-gray-800">Indicios ({indiciosList.length})</h2>
+              {canEdit && (
                 <button
-                  type="button"
-                  onClick={() => setShowIndicioForm(false)}
-                  className="bg-gray-200 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-300"
+                  onClick={() => setShowIndicioForm(!showIndicioForm)}
+                  className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
                 >
-                  Cancelar
+                  + Agregar Indicio
                 </button>
-                <button
-                  type="submit"
-                  className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
-                >
-                  Guardar Indicio
-                </button>
-              </div>
-            </form>
-          </div>
-        )}
+              )}
+            </div>
 
-        <div className="p-6">
-          {indiciosList.length === 0 ? (
-            <p className="text-center text-gray-500 py-8">No hay indicios registrados</p>
-          ) : (
-            <div className="space-y-4">
-              {indiciosList.map((indicio) => (
-                <div key={indicio.IndicioId} className="border rounded-lg p-4">
-                  <div className="flex justify-between">
-                    <div className="flex-1">
-                      <div className="font-medium text-gray-800">{indicio.Descripcion}</div>
-                      <div className="grid grid-cols-2 md:grid-cols-4 gap-2 mt-2 text-sm text-gray-600">
-                        {indicio.Color && <div>Color: {indicio.Color}</div>}
-                        {indicio.Tamano && <div>Tamaño: {indicio.Tamano}</div>}
-                        {indicio.Peso && <div>Peso: {indicio.Peso} kg</div>}
-                        <div>Ubicación: {indicio.Ubicacion}</div>
-                      </div>
-                      <div className="text-xs text-gray-500 mt-2">
-                        Registrado por {indicio.TecnicoNombre} el{' '}
-                        {new Date(indicio.FechaRegistro).toLocaleDateString()}
+            {showIndicioForm && (
+              <div className="p-6 border-b bg-gray-50">
+                <form onSubmit={handleCreateIndicio} className="space-y-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="md:col-span-2">
+                      <label className="block text-sm font-medium text-gray-700 mb-2">Descripción *</label>
+                      <textarea
+                        value={indicioForm.descripcion}
+                        onChange={(e) =>
+                          setIndicioForm({ ...indicioForm, descripcion: e.target.value })
+                        }
+                        required
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white text-gray-900"
+                        rows={2}
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">Color</label>
+                      <input
+                        type="text"
+                        value={indicioForm.color}
+                        onChange={(e) => setIndicioForm({ ...indicioForm, color: e.target.value })}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white text-gray-900"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">Tamaño</label>
+                      <input
+                        type="text"
+                        value={indicioForm.tamano}
+                        onChange={(e) => setIndicioForm({ ...indicioForm, tamano: e.target.value })}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white text-gray-900"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">Peso (kg)</label>
+                      <input
+                        type="number"
+                        step="0.01"
+                        value={indicioForm.peso}
+                        onChange={(e) => setIndicioForm({ ...indicioForm, peso: e.target.value })}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white text-gray-900"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">Ubicación *</label>
+                      <input
+                        type="text"
+                        value={indicioForm.ubicacion}
+                        onChange={(e) => setIndicioForm({ ...indicioForm, ubicacion: e.target.value })}
+                        required
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white text-gray-900"
+                      />
+                    </div>
+                  </div>
+                  <div className="flex gap-2">
+                    <button
+                      type="button"
+                      onClick={() => setShowIndicioForm(false)}
+                      className="bg-gray-200 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-300 transition-colors"
+                    >
+                      Cancelar
+                    </button>
+                    <button
+                      type="submit"
+                      className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+                    >
+                      Guardar Indicio
+                    </button>
+                  </div>
+                </form>
+              </div>
+            )}
+
+            <div className="p-6">
+              {indiciosList.length === 0 ? (
+                <p className="text-center text-gray-500 py-8">No hay indicios registrados</p>
+              ) : (
+                <div className="space-y-4">
+                  {indiciosList.map((indicio) => (
+                    <div key={indicio.IndicioId} className="border border-gray-200 rounded-lg p-4">
+                      <div className="flex justify-between">
+                        <div className="flex-1">
+                          <div className="font-medium text-gray-800">{indicio.Descripcion}</div>
+                          <div className="grid grid-cols-2 md:grid-cols-4 gap-2 mt-2 text-sm text-gray-600">
+                            {indicio.Color && <div>Color: {indicio.Color}</div>}
+                            {indicio.Tamano && <div>Tamaño: {indicio.Tamano}</div>}
+                            {indicio.Peso && <div>Peso: {indicio.Peso} kg</div>}
+                            <div>Ubicación: {indicio.Ubicacion}</div>
+                          </div>
+                          <div className="text-xs text-gray-500 mt-2">
+                            Registrado por {indicio.TecnicoNombre} el{' '}
+                            {new Date(indicio.FechaRegistro).toLocaleDateString()}
+                          </div>
+                        </div>
+                        {canEdit && (
+                          <button
+                            onClick={() => handleDeleteIndicio(indicio.IndicioId)}
+                            className="text-red-600 hover:text-red-800 ml-4 transition-colors"
+                          >
+                            Eliminar
+                          </button>
+                        )}
                       </div>
                     </div>
-                    {canEdit && (
-                      <button
-                        onClick={() => handleDeleteIndicio(indicio.IndicioId)}
-                        className="text-red-600 hover:text-red-800 ml-4"
-                      >
-                        Eliminar
-                      </button>
-                    )}
-                  </div>
+                  ))}
                 </div>
-              ))}
+              )}
             </div>
-          )}
+          </div>
         </div>
       </div>
     </div>
