@@ -29,6 +29,9 @@ dicri-system/
 └── docker-compose.yml       # Orquestación de contenedores
 ```
 
+### Diagrama arquitectura
+![Diagrama]('Diagrama arquitectura-2025-11-23-214240.png')
+
 ## Tecnologías Utilizadas
 
 - Frontend: Next.js 16, React 19, TailwindCSS
