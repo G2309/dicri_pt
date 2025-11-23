@@ -30,7 +30,7 @@ dicri-system/
 ```
 
 ### Diagrama arquitectura
-![Diagrama]('Diagrama arquitectura-2025-11-23-214240.png')
+![Diagrama](Diagrama_arquitectura-2025-11-23-214240.png)
 
 ## Tecnologías Utilizadas
 
